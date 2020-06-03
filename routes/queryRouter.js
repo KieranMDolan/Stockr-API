@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 
-const { getSymbols, getAuthSingleSymbol, getSingleSymbol } = require('../controllers/queries');
+const { getSymbols, getAuthSingleSymbol, getSingleSymbol } = require('../controllers/queryController');
 
 /* GET stocks/symbols and industry query */
 router.get("/symbols", getSymbols);

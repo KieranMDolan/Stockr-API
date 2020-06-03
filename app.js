@@ -7,8 +7,8 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const helmet = require('helmet');
 
-const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/users");
+const indexRouter = require("./routes/queryRouter");
+const usersRouter = require("./routes/usersRouter");
 
 const app = express();
 

@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const { getUsersWithEmail, insertUser } = require("../database/users");
+const { getUsersWithEmail, insertUser } = require("../database/userQueries");
 
 const registerUser = (req, res, next) => {
   const email = req.body.email;
