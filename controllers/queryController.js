@@ -107,8 +107,8 @@ const getAuthSingleSymbol = (req, res, next) => {
         return;
       }
     }
-      to = new Date(req.query.to).toISOString().slice(0, 10);
-      from = new Date(req.query.from).toISOString().slice(0, 10);
+    to = new Date(req.query.to).toISOString().slice(0, 10);
+    from = new Date(req.query.from).toISOString().slice(0, 10);
   } else if (queryLength > 2) {
     res.status(400).json({
       error: true,
@@ -163,14 +163,17 @@ const authorize = (req, res, next) => {
     token = authorization.split(" ")[1];
     console.log("Token: ", token);
   } else {
-    console.log("Unauthorized user");
+    res.status(403).json({
+      error: true,
+      message: "Authorization header not found",
+    });
     return;
   }
-}
+};
 
 module.exports = {
   getSymbols,
   getSingleSymbol,
   getAuthSingleSymbol,
-  authorize
+  authorize,
 };
