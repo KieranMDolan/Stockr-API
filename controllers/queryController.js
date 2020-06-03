@@ -20,7 +20,7 @@ const getAllSymbols = (req, res, next) => {
       res.json(rows);
     })
     .catch((err) => {
-      res.json({ Error: true, Message: "Error in MySQL query" });
+      res.status(500).json({ Error: true, Message: "Database error" });
     });
 };
 
@@ -42,7 +42,7 @@ const getSymbolsByIndustry = (req, res, next) => {
       res.status(status).json(data);
     })
     .catch((err) => {
-      console.log(err);
+      res.status(500).json({ Error: true, Message: "Database error" });
     });
 };
 
@@ -88,7 +88,7 @@ const getSingleSymbol = (req, res, next) => {
       res.status(status).json(data);
     })
     .catch((err) => {
-      res.status(500).json({ error: true, message: err });
+      res.status(500).json({ Error: true, Message: "Database error" });
     });
 };
 
@@ -151,7 +151,7 @@ const getAuthSingleSymbol = (req, res, next) => {
       res.status(200).json(row);
     })
     .catch((err) => {
-      res.status(500).json({ error: true, message: err });
+      res.status(500).json({ Error: true, Message: "Database error" });
     });
 };
 
