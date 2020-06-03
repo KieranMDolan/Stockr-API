@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const { getUsersWithEmail, insertUser } = require("../database/userQueries");
+const { SECRET_KEY } = require("../keys/forenvironmentvars");
 
 const registerUser = (req, res, next) => {
   const email = req.body.email;
@@ -66,7 +67,7 @@ const checkCredentialsExist = (req, res, next) => {
 };
 
 const createToken = (email) => {
-  const secretKey = "secret key";
+  const secretKey = SECRET_KEY;
   const expires_in = 60 * 60 * 24;
   const exp = Date.now() + expires_in * 1000;
   return [jwt.sign({ email, exp }, secretKey), expires_in];
