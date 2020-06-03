@@ -173,11 +173,12 @@ const authorize = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, secretKey);
+    const decoded = jwt.verify(token, SECRET_KEY);
 
     if (decoded.exp < Date.now()) {
       authorizationErrorHandler(req, res, next, "Token has expired");
     }
+    next();
   } catch (err) {
     authorizationErrorHandler(req, res, next, "Token is invalid");
   }
