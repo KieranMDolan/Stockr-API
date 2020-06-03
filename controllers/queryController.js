@@ -155,8 +155,22 @@ const getAuthSingleSymbol = (req, res, next) => {
     });
 };
 
+const authorize = (req, res, next) => {
+  const authorization = req.headers.authorization;
+  let token = null;
+
+  if (authorization && authorization.split(" ").length === 2) {
+    token = authorization.split(" ")[1];
+    console.log("Token: ", token);
+  } else {
+    console.log("Unauthorized user");
+    return;
+  }
+}
+
 module.exports = {
   getSymbols,
   getSingleSymbol,
   getAuthSingleSymbol,
+  authorize
 };
