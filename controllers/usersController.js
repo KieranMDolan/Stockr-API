@@ -8,7 +8,9 @@ const registerUser = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  checkCredentialsExist(req, res, next);
+  if (!doCredentialsExist(req, res, next)) {
+    return;
+  }
 
   getUsersWithEmail(req).then((users) => {
     if (users.length > 0) {
@@ -29,7 +31,9 @@ const loginUser = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  checkCredentialsExist(req, res, next);
+  if (!doCredentialsExist(req, res, next)) {
+    return;
+  }
 
   getUsersWithEmail(req)
     .then((users) => {
@@ -54,7 +58,7 @@ const loginUser = (req, res, next) => {
     });
 };
 
-const checkCredentialsExist = (req, res, next) => {
+const doCredentialsExist = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   if (!email || !password) {
@@ -62,7 +66,9 @@ const checkCredentialsExist = (req, res, next) => {
       error: true,
       message: "Request body incomplete - email and password needed",
     });
-    return;
+    return false;
+  } else {
+    return true;
   }
 };
 
