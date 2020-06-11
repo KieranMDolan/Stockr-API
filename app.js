@@ -9,6 +9,7 @@ const helmet = require('helmet');
 
 const indexRouter = require("./routes/queryRouter");
 const usersRouter = require("./routes/usersRouter");
+const swaggerRouter = require("./routes/swaggerRouter");
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 // set up routers
 app.use("/stocks", indexRouter);
 app.use("/user", usersRouter);
+app.use("/", swaggerRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
