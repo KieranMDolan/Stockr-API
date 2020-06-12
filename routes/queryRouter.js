@@ -6,7 +6,7 @@ const {
   getAuthSingleSymbol,
   getSingleSymbol,
 } = require("../controllers/queryController");
-const { authorize } = require("../services/userServices");
+const { authorize } = require("../services/authServices");
 
 /* GET stocks/symbols with optional industry query */
 router.get("/symbols", getSymbols);

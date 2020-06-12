@@ -1,4 +1,3 @@
-const createError = require("http-errors");
 const options = require("./knexfile.js");
 const knex = require("knex")(options);
 const express = require("express");
@@ -21,8 +20,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
-// knex
 app.use((req, res, next) => {
   req.db = knex;
   next();
@@ -33,13 +30,12 @@ app.use("/stocks", indexRouter);
 app.use("/user", usersRouter);
 app.use("/", swaggerRouter);
 
-// catch 404 and forward to error handler
+// 404 handling
 app.use(function (req, res, next) {
-  res.status(404).send("404");
-  // next(createError(404));
+  res.status(404).json({error: true, message: "route not found"});
 });
 
-// logger
+// set up logging
 logger.token("req", (req, res) => JSON.stringify(req.headers));
 logger.token("res", (req, res) => {
   const headers = {};
