@@ -1,4 +1,4 @@
-const { handleSymbolsRequest, handleUnauthedSymbolRequest, handleAuthedSymbolRequest } = require("../services/queryServices");
+const { handleSymbolsRequest, handleUnauthedSymbolRequest, handleAuthedSymbolRequest } = require("../services/stockServices");
 
 const getSymbols = (req, res, next) => {
   handleSymbolsRequest(req, res, next);
