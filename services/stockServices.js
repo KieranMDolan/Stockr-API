@@ -1,9 +1,17 @@
 const { getAllSymbolsFromDb, getSymbolsByIndustryFromDb, getMostRecentSingleStock, getStockWithDateRange } = require("../database/stockQueries");
 
+// hardcoded date boundaries to be replaced with scheduled db query extractions
+// in the case of actual deployment
 const MOST_RECENT_DATE_PLUS_ONE = "2020-03-25";
 const MOST_RECENT_DATE = "2020-03-24";
 const EARLIEST_DATE = "2019-11-06";
 
+
+/**
+ * Checks if a date range is valid in regards to the database.
+ * @param {*} to 
+ * @param {*} from 
+ */
 const isValidDateRange = (to, from) => {
   if (
     new Date(to) > new Date(MOST_RECENT_DATE_PLUS_ONE) ||
@@ -16,6 +24,10 @@ const isValidDateRange = (to, from) => {
   }
 };
 
+/**
+ * Validates to and from queries. Returns true if valid, false if not.
+ * @param {*} queries 
+ */
 const isValidQueries = (queries) => {
   let queryLength = Object.keys(queries).length;
   if (queryLength === 2 || queryLength === 1) {
@@ -30,6 +42,14 @@ const isValidQueries = (queries) => {
   }
 };
 
+/**
+ * Validates and handles error responses regarding queries. 
+ * Returns to and from as [to, from] if queries are valid OR not-included, otherwise returns
+ * [null, null].
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 const getQueries = (req, res, next) => {
   let to = MOST_RECENT_DATE_PLUS_ONE;
   let from = MOST_RECENT_DATE;
@@ -47,6 +67,7 @@ const getQueries = (req, res, next) => {
     return [null, null];
   }
 
+  // check date validity and error handling
   if (!isValidDateRange(to, from)) {
     res.status(404).json({
       error: true,
@@ -57,6 +78,13 @@ const getQueries = (req, res, next) => {
   return [to, from];
 };
 
+/**
+ * Gets all distinct symbols from the database and responds with either a
+ * json array of the records, or a 500 error message.
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 const getAllSymbols = (req, res, next) => {
   getAllSymbolsFromDb(req)
     .then((rows) => {
@@ -67,6 +95,13 @@ const getAllSymbols = (req, res, next) => {
     });
 };
 
+/**
+ * Sends response of all distinct symbols from the database that contain the queried string 
+ * within their industry field and error responses
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 const getSymbolsByIndustry = (req, res, next) => {
   getSymbolsByIndustryFromDb(req)
     .then((rows) => {
@@ -86,6 +121,13 @@ const getSymbolsByIndustry = (req, res, next) => {
     });
 };
 
+/**
+ * Calls the correct symbol request function according to presence of an industry query in the 
+ * request object OR sends an error response if an incorrect query parameter is included.
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 const handleSymbolsRequest = (req, res, next) => {
   let queryLength = Object.keys(req.query).length;
   if (queryLength === 0) {
@@ -100,7 +142,14 @@ const handleSymbolsRequest = (req, res, next) => {
   }
 }
 
+/**
+ * Handles an unauthorised, parameterless single symbol request with error handling.
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 const handleUnauthedSymbolRequest = (req, res, next) => {
+  // check for queries
   let queryLength = Object.keys(req.query).length;
   if (queryLength !== 0) {
     res.status(400).json({
@@ -111,6 +160,7 @@ const handleUnauthedSymbolRequest = (req, res, next) => {
     return;
   }
 
+  // query db
   getMostRecentSingleStock(req)
     .then((row) => {
       let data;
@@ -132,12 +182,21 @@ const handleUnauthedSymbolRequest = (req, res, next) => {
     });
 }
 
+/**
+ * Handles an authorised single stock request, optional to and from queries and
+ * error/success responses.
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 const handleAuthedSymbolRequest = (req, res, next) => {
   [to, from] = getQueries(req, res, next);
+  // if an error response has already been sent
   if (!to && !from) {
     return;
   }
 
+  // query db
   getStockWithDateRange(from, to, req)
     .then((row) => {
       let data;
