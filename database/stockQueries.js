@@ -1,14 +1,16 @@
 const MOST_RECENT_TRADING_DATE = "2020-03-24";
+const options = require("../knexfile.js");
+const knex = require("knex")(options);
 
 // returns the name, symbol and industry of all distinct stocks
 async function getAllSymbolsFromDb(req) {
-  return await req.db.from("stocks").distinct("name", "symbol", "industry");
+  return await knex.from("stocks").distinct("name", "symbol", "industry");
 }
 
 // returns the name, symbol and industry of all stocks where the industry query is in their
 // industry string
 async function getSymbolsByIndustryFromDb(req) {
-  return await req.db
+  return await knex
     .where("industry", "like", `%${req.query.industry}%`)
     .from("stocks")
     .distinct("name", "symbol", "industry");
@@ -16,7 +18,7 @@ async function getSymbolsByIndustryFromDb(req) {
 
 // gets all values of a single stock for the most recent trading date
 async function getMostRecentSingleStock(req) {
-  return await req.db
+  return await knex
     .where({ symbol: req.params.symbol, timestamp: MOST_RECENT_TRADING_DATE })
     .from("stocks")
     .select(
@@ -34,7 +36,7 @@ async function getMostRecentSingleStock(req) {
 
 // get all values of a single stock for a from-to (non inclusive to) date range
 async function getStockWithDateRange(from, to, req) {
-  return await req.db
+  return await knex
     .where("symbol", req.params.symbol)
     .whereBetween("timestamp", [from, to])
     .from("stocks")
