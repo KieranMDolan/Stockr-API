@@ -89,14 +89,14 @@ const getQueries = (req, res, next) => {
  * @param {*} res
  * @param {*} next
  */
-const getAllSymbols = (req, res, next) => {
-  getAllSymbolsFromDb()
-    .then((rows) => {
-      res.json(rows);
-    })
-    .catch((err) => {
-      res.status(500).json({ Error: true, Message: "Database error" });
-    });
+async function getAllSymbols() {
+  let rows;
+  try {
+    rows = await getAllSymbolsFromDb();
+  } catch (e) {
+    throw { status : 500, Message: "Database error"};
+  }
+  return rows;
 };
 
 /**
@@ -107,13 +107,13 @@ async function getSymbolsByIndustry(req) {
   let rows;
   try {
      rows = await getSymbolsByIndustryFromDb(req.query.industry);
-  } catch (e) {
-    throw { status : 500, Message: "Database error"};
-  }
-  if (rows.length === 0) {
-    throw { status: 404, message: "Industry sector not found" };
-  }
-  return rows;
+    } catch (e) {
+      throw { status : 500, Message: "Database error"};
+    }
+    if (rows.length === 0) {
+      throw { status: 404, message: "Industry sector not found" };
+    }
+    return rows;
 }
 
 /**

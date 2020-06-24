@@ -6,12 +6,12 @@ const {
 } = require("../services/stockServices");
 
 async function getSymbols(req, res, next) {
-  // handleSymbolsRequest(req, res, next);
-  // let queryLength = Object.keys(req.query).length;
   let queryExists = Object.keys(req.query).length > 0;
+  
   if (!queryExists) {
     try {
-      getAllSymbols(req, res, next);
+      const stocks = await getAllSymbols();
+      res.status(200).json(stocks);
     } catch (e) {
       if (!e.status) {
         res.status(500).json({ error: true, message: "Unknown Error" });
