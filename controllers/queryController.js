@@ -18,9 +18,9 @@ async function handleUnqueriedSymbolRequest(res) {
   }
 }
 
-async function handleQueriedSymbolRequest(req, res, next) {
+async function handleQueriedSymbolRequest(req, res) {
   try {
-    const stocks = await getSymbolsByIndustry(req, res, next);
+    const stocks = await getSymbolsByIndustry(req.query.industry);
     res.status(200).json(stocks);
   } catch (e) {
     console.log(e);
@@ -32,13 +32,13 @@ async function handleQueriedSymbolRequest(req, res, next) {
   }
 }
 
-function getSymbols(req, res, next) {
+function getSymbols(req, res) {
   let queryExists = Object.keys(req.query).length > 0;
 
   if (!queryExists) {
     handleUnqueriedSymbolRequest(res);
   } else if (queryExists && req.query.industry) {
-    handleQueriedSymbolRequest(req, res, next);
+    handleQueriedSymbolRequest(req, res);
   } else {
     res.status(400).json({
       error: true,

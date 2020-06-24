@@ -103,10 +103,10 @@ async function getAllSymbols() {
  * Sends response of all distinct symbols from the database that contain the queried string
  * within their industry field and error responses
  */
-async function getSymbolsByIndustry(req) {
+async function getSymbolsByIndustry(industry) {
   let rows;
   try {
-     rows = await getSymbolsByIndustryFromDb(req.query.industry);
+     rows = await getSymbolsByIndustryFromDb(industry);
     } catch (e) {
       throw { status : 500, Message: "Database error"};
     }
