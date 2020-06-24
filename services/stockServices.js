@@ -117,27 +117,6 @@ async function getSymbolsByIndustry(industry) {
 }
 
 /**
- * Calls the correct symbol request function according to presence of an industry query in the
- * request object OR sends an error response if an incorrect query parameter is included.
- * @param {*} req
- * @param {*} res
- * @param {*} next
- */
-const handleSymbolsRequest = (req, res, next) => {
-  let queryLength = Object.keys(req.query).length;
-  if (queryLength === 0) {
-    getAllSymbols(req, res, next);
-  } else if (queryLength === 1 && req.query.industry) {
-    getSymbolsByIndustry(req, res, next);
-  } else {
-    res.status(400).json({
-      error: true,
-      message: "Invalid query parameter: only 'industry' is permitted",
-    });
-  }
-};
-
-/**
  * Handles an unauthorised, parameterless single symbol request with error handling.
  * @param {*} req
  * @param {*} res
@@ -210,7 +189,6 @@ const handleAuthedSymbolRequest = (req, res, next) => {
 
 module.exports = {
   getQueries,
-  handleSymbolsRequest,
   handleUnauthedSymbolRequest,
   handleAuthedSymbolRequest,
   getAllSymbols,
