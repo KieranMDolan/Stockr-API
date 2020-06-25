@@ -14,7 +14,7 @@ const credentials = {
  cert: certificate
 };
 
-const indexRouter = require("./routes/queryRouter");
+const indexRouter = require("./routes/stockRouter");
 const usersRouter = require("./routes/usersRouter");
 const swaggerRouter = require("./routes/swaggerRouter");
 
