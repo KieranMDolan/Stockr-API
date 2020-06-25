@@ -13,8 +13,8 @@ const EARLIEST_DATE = "2019-11-06";
 
 /**
  * Checks if a date range is valid in regards to the database.
- * @param {*} to
- * @param {*} from
+ * @param {*} to the non-inclusive to date
+ * @param {*} from the starting date
  */
 const isValidDateRange = (to, from) => {
   if (
@@ -29,8 +29,9 @@ const isValidDateRange = (to, from) => {
 };
 
 /**
- * Validates to and from queries. Returns true if valid, false if not.
- * @param {*} queries
+ * Checks whether passed queries are defined. Returns true if valid, false if not.
+ * @param {*} queryTo the 'to' query passed in as req.query.to
+ * @param {*} queryFrom the 'from' query, passed in as req.query.from
  */
 const isValidQueries = (queryTo, queryFrom) => {
   if (queryTo !== undefined || queryFrom !== undefined) {
@@ -42,13 +43,11 @@ const isValidQueries = (queryTo, queryFrom) => {
 
 /**
  * Validates and handles error responses regarding queries.
- * Returns to and from as [to, from] if queries are valid OR not-included, otherwise returns
- * [null, null].
  * @param {*} queryTo the queried to date
  * @param {*} queryFrom the queried from date
- * @param {*} next
+ * @returns to and from as [to, from] if queries are valid,
+ * otherwise throws appropriate error.
  */
-// const getValidatedQueries = (req, res, next) => {
 const getValidatedQueries = (queryTo, queryFrom) => {
   let to = MOST_RECENT_DATE_PLUS_ONE;
   let from = MOST_RECENT_DATE;
@@ -77,11 +76,9 @@ const getValidatedQueries = (queryTo, queryFrom) => {
 };
 
 /**
- * Gets all distinct symbols from the database and responds with either a
- * json array of the records, or a 500 error message.
- * @param {*} req
- * @param {*} res
- * @param {*} next
+ * Gets all distinct symbols from the database
+ * @returns an array of stock objects
+ * @throws an error object with the keys status and message
  */
 async function getAllSymbols() {
   let rows;
@@ -94,8 +91,10 @@ async function getAllSymbols() {
 }
 
 /**
- * Sends response of all distinct symbols from the database that contain the queried string
- * within their industry field and error responses
+ * Gets all symbols matching the industry parameter used to call the method.
+ * @param industry a string to match to records in the stock database
+ * @returns a list of stock objects matching the industry parameter
+ * @throws an error object with the keys status and message to be used for error responses
  */
 async function getSymbolsByIndustry(industry) {
   let rows;
@@ -112,41 +111,44 @@ async function getSymbolsByIndustry(industry) {
 
 /**
  * Handles an unauthorised, parameterless single symbol request with error handling.
- * @param {*} req
- * @param {*} res
- * @param {*} next
+ * @param paramSymbol the requested symbol retrieved from the params of the request
+ * @param queryLength the number of keys in the request query object
+ * @returns the requested stock object data
+ * @throws an error object with the keys 'status' and 'message'
  */
 async function handleUnauthedSymbolRequest(paramSymbol, queryLength) {
-  // check for queries
   let data;
-
+  // check for queries
   if (queryLength !== 0) {
     throw {
       status: 400,
-      message: "Date parameters only available on authenticated route /stocks/authed"
-    }
+      message:
+        "Date parameters only available on authenticated route /stocks/authed",
+    };
   }
 
   // query db
   try {
     data = await getMostRecentSingleStock(paramSymbol);
   } catch (e) {
-    throw { status: 500, message: "Database error"};
+    throw { status: 500, message: "Database error" };
   }
 
   if (data.length === 1) {
     return data[0];
   } else {
-    throw { status: 404, message: "No entry for symbol in stocks database"};
+    throw { status: 404, message: "No entry for symbol in stocks database" };
   }
-};
+}
 
 /**
  * Handles an authorised single stock request, optional to and from queries and
  * error/success responses.
- * @param {*} req
- * @param {*} res
- * @param {*} next
+ * @param {*} queryTo the reqeuested to date, split from the request queries
+ * @param {*} queryFrom the requested from date, split from the request queries
+ * @param {*} querySymbol the requested symbol, split from the request params
+ * @returns the row data for the stock request
+ * @throws an error object with the keys 'status' and 'message'
  */
 async function handleAuthedSymbolRequest(queryTo, queryFrom, querySymbol) {
   let rows, to, from;
