@@ -116,38 +116,29 @@ async function getSymbolsByIndustry(industry) {
  * @param {*} res
  * @param {*} next
  */
-const handleUnauthedSymbolRequest = (req, res, next) => {
+async function handleUnauthedSymbolRequest(paramSymbol, queryLength) {
   // check for queries
-  let queryLength = Object.keys(req.query).length;
+  let data;
+
   if (queryLength !== 0) {
-    res.status(400).json({
-      error: true,
-      message:
-        "Date parameters only available on authenticated route /stocks/authed",
-    });
-    return;
+    throw {
+      status: 400,
+      message: "Date parameters only available on authenticated route /stocks/authed"
+    }
   }
 
   // query db
-  getMostRecentSingleStock(req.params.symbol)
-    .then((row) => {
-      let data;
-      let status;
-      if (row.length === 1) {
-        data = row[0];
-        status = 200;
-      } else {
-        data = {
-          error: true,
-          message: "No entry for symbol in stocks database",
-        };
-        status = 404;
-      }
-      res.status(status).json(data);
-    })
-    .catch((err) => {
-      res.status(500).json({ Error: true, Message: "Database error" });
-    });
+  try {
+    data = await getMostRecentSingleStock(paramSymbol);
+  } catch (e) {
+    throw { status: 500, message: "Database error"};
+  }
+
+  if (data.length === 1) {
+    return data[0];
+  } else {
+    throw { status: 404, message: "No entry for symbol in stocks database"};
+  }
 };
 
 /**
