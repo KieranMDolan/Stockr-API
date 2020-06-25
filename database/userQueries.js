@@ -1,4 +1,6 @@
 const bcrypt = require("bcrypt");
+const options = require("../knexfile.js");
+const knex = require("knex")(options);
 
 // User/Auth Services related db queries
 
@@ -8,7 +10,7 @@ const bcrypt = require("bcrypt");
  */
 const getUsersWithEmail = (req) => {
   const email = req.body.email;
-  return req.db.from("users").select("*").where("email", email);
+  return knex.from("users").select("*").where("email", email);
 };
 
 /**
@@ -20,7 +22,7 @@ const getUsersWithEmail = (req) => {
 const insertUser = (req, email, password) => {
   const saltRounds = 10;
   const hash = bcrypt.hashSync(password, saltRounds);
-  return req.db.from("users").insert({ email, hash });
+  return knex.from("users").insert({ email, hash });
 };
 
 module.exports = {

@@ -5,7 +5,7 @@ const {
   getSymbols,
   getAuthSingleSymbol,
   getSingleSymbol,
-} = require("../controllers/queryController");
+} = require("../controllers/stockController");
 const { authorize } = require("../services/authServices");
 
 /* GET stocks/symbols with optional industry query */
